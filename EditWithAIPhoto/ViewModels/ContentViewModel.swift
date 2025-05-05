@@ -1,12 +1,13 @@
 import Foundation
 import SwiftUI
+import UIKit
 
 @MainActor
 class ContentViewModel: ObservableObject {
     
-    @Published var selectedImage: Image? = nil
-    @Published var processedImage: Image? = nil
-    @Published var isLoading: Bool = true
+    @Published var selectedImage: UIImage? = nil
+    @Published var processedImage: UIImage? = nil
+    @Published var isLoading: Bool = true //Başlangıçta true olarak ayarlanır.
     @Published var showOriginal: Bool = false
     
     let filterOptions: [FilterOption] = [
@@ -29,7 +30,7 @@ class ContentViewModel: ObservableObject {
         FilterOption(name: "ART 03", imageName: "image17")
     ]
     
-    init() {
+    init() { //init fonk eklenerek uygulama açılır açılmaz fetchRandomImage fonksiyonu çağrılır.
         Task {
             await fetchRandomImage()
         }
@@ -41,7 +42,8 @@ class ContentViewModel: ObservableObject {
         isLoading = true
         
         do {
-            processedImage = try await ImageService.shared.fetchRandomImage()
+            let uiImage = try await ImageService.shared.fetchRandomImage()
+            processedImage = uiImage
         } catch {
             print("API hatası: \(error.localizedDescription)")
         }

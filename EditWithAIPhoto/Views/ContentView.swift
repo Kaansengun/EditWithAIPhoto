@@ -11,13 +11,13 @@ struct ContentView: View {
     @StateObject private var viewModel = ContentViewModel()
     
     var body: some View {
-        NavigationView {
-            ZStack {
+        NavigationView { 
+            ZStack { // ZStack yapısını kullanarak loading göstergesini tüm ekranı kaplayacak 
                 VStack(spacing: 0) {
                     // Ana görüntü alanı
                     ZStack {
-                        if let image = viewModel.showOriginal ? viewModel.selectedImage : (viewModel.processedImage ?? viewModel.selectedImage) { // İlk ifade true ise ?'den hemen sonrası çalışır yoksa parantezin içine girer. Parantezin içinde de aynı mantığı işler.
-                            image
+                        if let image = viewModel.showOriginal ? viewModel.selectedImage : (viewModel.processedImage ?? viewModel.selectedImage) {
+                            Image(uiImage: image)
                                 .resizable()
                                 .scaledToFit()
                                 .frame(maxWidth: .infinity, maxHeight: UIScreen.main.bounds.height * 0.6)
@@ -43,8 +43,8 @@ struct ContentView: View {
                     Toggle("Original image", isOn: $viewModel.showOriginal)
                         .padding()
                         .background(Color(.systemGray6))
-                        .disabled(viewModel.isLoading)
-                    
+                        .disabled(viewModel.isLoading) //Yükleme işlemi devam ediyorsa butonlar devre dışı bırakılır.
+                                                
                     // Filter options
                     ScrollView(.horizontal, showsIndicators: false) {
                         HStack(spacing: 15) {
@@ -94,11 +94,12 @@ struct ContentView: View {
                 }
                 
                 // Loading overlay tüm ekranı kaplıyor
-                if viewModel.isLoading {
+                if viewModel.isLoading { //Yükleme işlemi devam ediyorsa loading ekranı gösterilir.
                     VStack {
                         ProgressView()
                             .progressViewStyle(CircularProgressViewStyle())
                             .scaleEffect(2)
+                            .tint(.white) //Dönen yuvarlağın rengi beyaz yapıldı.
                         Text("Loading template...")
                             .foregroundColor(.white)
                             .padding(.top, 15)
@@ -106,7 +107,7 @@ struct ContentView: View {
                     }
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                     .background(Color.black.opacity(0.3))
-                    .edgesIgnoringSafeArea(.all)
+                    .edgesIgnoringSafeArea(.all) //Yükleme ekranının tüm ekranı kaplaması için.
                 }
             }
         }

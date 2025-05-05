@@ -1,6 +1,7 @@
 import Foundation
 import SwiftUI
 import UIKit
+//Burada AsyncImage kullanmak mantıklı değil çünkü bu yapı internet URL'i üzerindeki resmi doğrudan kullanmak için optimize edilmiş bir yapıdır. Biz daha çok resmi değiştirme işlemlerini vs. gibi ölçeklendirme yapacağız.
 
 class ImageService {
     
@@ -8,19 +9,20 @@ class ImageService {
     
     private init() {}
     
-    func fetchRandomImage() async throws -> Image {
+    func fetchRandomImage() async throws -> UIImage {
         
         let url = URL(string: "https://picsum.photos/480/640")!
-        let (data, _) = try await URLSession.shared.data(from: url) //Tuple döndürüyor. Biz burada sadece veri kısmını kullanıyoruz. (URLRequest) kısmı boş bu sayede gereksiz değişken kullanımının önüne geçiliyor.
+        try await Task.sleep(nanoseconds: 100_000_000) // Burada 0.1 saniye bekleme yaparak projenin performansında bir artış yapmak amaçlanmaktadır
+        let (data, _) = try await URLSession.shared.data(from: url)
         
-        guard let uiImage = UIImage(data: data) else { //Burada datayı ilk başta UIImage'a çevirmemiz gerekiyor.
+        guard let uiImage = UIImage(data: data) else {
             throw ImageError.invalidData
         }
         
-        return Image(uiImage: uiImage)// UIKitten SwiftUI'ya dönüşümü burada gerçekleştiriyoruz.
+        return uiImage
     }
 }
 
 enum ImageError: Error {
     case invalidData
-} 
+}
